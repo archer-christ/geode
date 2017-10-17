@@ -95,14 +95,39 @@ public class SerializerUtil {
     Class<?> clazz = fieldValue.getClass();
     if (clazz == String.class) {
       doc.add(new TextField(field, (String) fieldValue, Store.NO));
+    } else if (clazz == String[].class) {
+      String[] stringArray = (String[]) fieldValue;
+      for (String s : stringArray) {
+        doc.add(new TextField(field, s, Store.NO));
+      }
     } else if (clazz == Long.class) {
       doc.add(new LongPoint(field, (Long) fieldValue));
+    } else if (clazz == Long[].class) {
+      Long[] longArray = (Long[]) fieldValue;
+      for (Long l : longArray) {
+        doc.add(new LongPoint(field, l));
+      }
     } else if (clazz == Integer.class) {
       doc.add(new IntPoint(field, (Integer) fieldValue));
+    } else if (clazz == Integer[].class) {
+      Integer[] integerArray = (Integer[]) fieldValue;
+      for (Integer i : integerArray) {
+        doc.add(new IntPoint(field, i));
+      }
     } else if (clazz == Float.class) {
       doc.add(new FloatPoint(field, (Float) fieldValue));
+    } else if (clazz == Float[].class) {
+      Float[] floatArray = (Float[]) fieldValue;
+      for (Float f : floatArray) {
+        doc.add(new FloatPoint(field, f));
+      }
     } else if (clazz == Double.class) {
       doc.add(new DoublePoint(field, (Double) fieldValue));
+    } else if (clazz == Double[].class) {
+      Double[] doubleArray = (Double[]) fieldValue;
+      for (Double d : doubleArray) {
+        doc.add(new DoublePoint(field, d));
+      }
     } else {
       return false;
     }

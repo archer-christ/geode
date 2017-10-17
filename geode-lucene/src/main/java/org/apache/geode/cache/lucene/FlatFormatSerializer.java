@@ -86,6 +86,9 @@ public class FlatFormatSerializer implements LuceneSerializer {
 
   private void addFieldValue(Document doc, String indexedFieldName, Object value,
       List<String> tokenizedFields) {
+    if (tokenizedFields.isEmpty()) {
+      return;
+    }
     String currentLevelField = tokenizedFields.get(0);
 
     Object fieldValue = getFieldValue(value, currentLevelField);
@@ -94,6 +97,18 @@ public class FlatFormatSerializer implements LuceneSerializer {
       return;
     }
 
+    if (fieldValue instanceof Collection) {
+      Collection collection = (Collection) fieldValue;
+      for (Object item : collection) {
+        addFieldValueForNonCollectionObject(doc, indexedFieldName, item, tokenizedFields);
+      }
+    } else {
+      addFieldValueForNonCollectionObject(doc, indexedFieldName, fieldValue, tokenizedFields);
+    }
+  }
+
+  private void addFieldValueForNonCollectionObject(Document doc, String indexedFieldName,
+      Object fieldValue, List<String> tokenizedFields) {
     if (tokenizedFields.size() == 1) {
       SerializerUtil.addField(doc, indexedFieldName, fieldValue);
     } else {
