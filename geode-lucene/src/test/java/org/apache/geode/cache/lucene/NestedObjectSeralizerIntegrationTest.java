@@ -57,8 +57,8 @@ public class NestedObjectSeralizerIntegrationTest extends LuceneIntegrationTest 
 
   private Region createRegionAndIndexOnInvalidFields() {
     luceneService.createIndexFactory().setLuceneSerializer(new FlatFormatSerializer())
-        .addField("name").addField("contact").addField("contact.page").addField("contact.missing")
-        .addField("missing2").create(INDEX_NAME, REGION_NAME);
+        .addField("name").addField("contacts").addField("contacts.page")
+        .addField("contacts.missing").addField("missing2").create(INDEX_NAME, REGION_NAME);
 
     Region region = createRegion(REGION_NAME, RegionShortcut.PARTITION);
     return region;
@@ -137,19 +137,19 @@ public class NestedObjectSeralizerIntegrationTest extends LuceneIntegrationTest 
     printResults(results);
   }
 
-  // @Test
+  @Test
   public void queryOnContactNameWithExactMath() throws InterruptedException, LuceneQueryException {
     Region region = createRegionAndIndex();
     feedSomeNestedObjects(region);
 
     query = luceneService.createLuceneQueryFactory().create(INDEX_NAME, REGION_NAME,
-        "\"Johnni Jackson\"", "contact.name");
+        "\"Johnni Jackson\"", "contacts.name");
     results = query.findPages();
     assertEquals(1, results.size());
     printResults(results);
   }
 
-  // @Test
+  @Test
   public void queryOnNameWithWrongValue() throws InterruptedException, LuceneQueryException {
     Region region = createRegionAndIndex();
     feedSomeNestedObjects(region);
@@ -160,7 +160,7 @@ public class NestedObjectSeralizerIntegrationTest extends LuceneIntegrationTest 
     assertEquals(0, results.size());
   }
 
-  // @Test
+  @Test
   public void queryOnNameWithExactMatch() throws InterruptedException, LuceneQueryException {
     Region region = createRegionAndIndex();
     feedSomeNestedObjects(region);
@@ -172,20 +172,19 @@ public class NestedObjectSeralizerIntegrationTest extends LuceneIntegrationTest 
     printResults(results);
   }
 
-  // @Test
+  @Test
   public void queryOnContactEmailWithAnalyzer() throws InterruptedException, LuceneQueryException {
     Region region = createRegionAndIndex();
     feedSomeNestedObjects(region);
 
-    // query-3: contact.email with KeywordAnalyzer
     query = luceneService.createLuceneQueryFactory().create(INDEX_NAME, REGION_NAME,
-        "Johnni.Jackson2@pivotal.io", "contact.email");
+        "Johnni.Jackson2@pivotal.io", "contacts.email");
     results = query.findPages();
     assertEquals(1, results.size());
     printResults(results);
   }
 
-  // @Test
+  @Test
   public void queryOnNonExistEmailField() throws InterruptedException, LuceneQueryException {
     Region region = createRegionAndIndex();
     feedSomeNestedObjects(region);
@@ -196,20 +195,20 @@ public class NestedObjectSeralizerIntegrationTest extends LuceneIntegrationTest 
     assertEquals(0, results.size());
   }
 
-  // @Test
+  @Test
   public void queryOnContactAddressWithStandardAnalyzer()
       throws InterruptedException, LuceneQueryException {
     Region region = createRegionAndIndex();
     feedSomeNestedObjects(region);
 
     query = luceneService.createLuceneQueryFactory().create(INDEX_NAME, REGION_NAME, "97006",
-        "contact.address");
+        "contacts.address");
     results = query.findPages();
     assertEquals(4, results.size());
     printResults(results);
   }
 
-  // @Test
+  @Test
   public void queryOnNonExistAddressField() throws InterruptedException, LuceneQueryException {
     Region region = createRegionAndIndex();
     feedSomeNestedObjects(region);
@@ -220,19 +219,19 @@ public class NestedObjectSeralizerIntegrationTest extends LuceneIntegrationTest 
     assertEquals(0, results.size());
   }
 
-  // @Test
+  @Test
   public void queryOnThreeLayerField() throws InterruptedException, LuceneQueryException {
     Region region = createRegionAndIndex();
     feedSomeNestedObjects(region);
 
     query = luceneService.createLuceneQueryFactory().create(INDEX_NAME, REGION_NAME,
-        "contact.homepage.content:Hello", "name");
+        "contacts.homepage.content:Hello", "name");
     results = query.findPages();
     printResults(results);
     assertEquals(4, results.size());
   }
 
-  // @Test
+  @Test
   public void queryOnThirdLayerFieldDirectlyShouldNotGetResult()
       throws InterruptedException, LuceneQueryException {
     Region region = createRegionAndIndex();
@@ -244,7 +243,7 @@ public class NestedObjectSeralizerIntegrationTest extends LuceneIntegrationTest 
     printResults(results);
   }
 
-  // @Test
+  @Test
   public void queryOnRegionValueField() throws InterruptedException, LuceneQueryException {
     Region region = createRegionAndIndex();
     feedSomeNestedObjects(region);
@@ -256,7 +255,7 @@ public class NestedObjectSeralizerIntegrationTest extends LuceneIntegrationTest 
     assertEquals(4, results.size());
   }
 
-  // @Test
+  @Test
   public void nonExistFieldsShouldBeIgnored() throws InterruptedException, LuceneQueryException {
     Region region = createRegionAndIndexOnInvalidFields();
     feedSomeNestedObjects(region);
@@ -268,19 +267,19 @@ public class NestedObjectSeralizerIntegrationTest extends LuceneIntegrationTest 
     printResults(results);
   }
 
-  // @Test
+  @Test
   public void queryOnNotIndexedFieldShouldReturnNothing()
       throws InterruptedException, LuceneQueryException {
     Region region = createRegionAndIndexOnInvalidFields();
     feedSomeNestedObjects(region);
 
     query = luceneService.createLuceneQueryFactory().create(INDEX_NAME, REGION_NAME,
-        "\"Johnni Jackson\"", "contact.name");
+        "\"Johnni Jackson\"", "contacts.name");
     results = query.findPages();
     assertEquals(0, results.size());
   }
 
-  // @Test
+  @Test
   public void queryWithExactMatchWhileIndexOnSomeWrongFields()
       throws InterruptedException, LuceneQueryException {
     Region region = createRegionAndIndexOnInvalidFields();
@@ -293,55 +292,55 @@ public class NestedObjectSeralizerIntegrationTest extends LuceneIntegrationTest 
     printResults(results);
   }
 
-  // @Test
+  @Test
   public void queryOnNotIndexedFieldWithAnalyzerShouldReturnNothing()
       throws InterruptedException, LuceneQueryException {
     Region region = createRegionAndIndexOnInvalidFields();
     feedSomeNestedObjects(region);
 
     query = luceneService.createLuceneQueryFactory().create(INDEX_NAME, REGION_NAME,
-        "Johnni.Jackson2@pivotal.io", "contact.email");
+        "Johnni.Jackson2@pivotal.io", "contacts.email");
     results = query.findPages();
     assertEquals(0, results.size());
   }
 
-  // @Test
+  @Test
   public void queryOnNotIndexedContactAddressFieldShouldReturnNothing()
       throws InterruptedException, LuceneQueryException {
     Region region = createRegionAndIndexOnInvalidFields();
     feedSomeNestedObjects(region);
 
     query = luceneService.createLuceneQueryFactory().create(INDEX_NAME, REGION_NAME, "97006",
-        "contact.address");
+        "contacts.address");
     results = query.findPages();
     assertEquals(0, results.size());
   }
 
-  // @Test
+  @Test
   public void queryOnNotIndexedThreeLayerFieldShouldReturnNothing()
       throws InterruptedException, LuceneQueryException {
     Region region = createRegionAndIndexOnInvalidFields();
     feedSomeNestedObjects(region);
 
     query = luceneService.createLuceneQueryFactory().create(INDEX_NAME, REGION_NAME,
-        "contact.homepage.content:Hello", "name");
+        "contacts.homepage.content:Hello", "name");
     results = query.findPages();
     assertEquals(0, results.size());
   }
 
-  // @Test
+  @Test
   public void queryOnNotExistSecondLevelFieldShouldReturnNothing()
       throws InterruptedException, LuceneQueryException {
     Region region = createRegionAndIndexOnInvalidFields();
     feedSomeNestedObjects(region);
 
     query = luceneService.createLuceneQueryFactory().create(INDEX_NAME, REGION_NAME, "*",
-        "contact.missing");
+        "contacts.missing");
     results = query.findPages();
     assertEquals(0, results.size());
   }
 
-  // @Test
+  @Test
   public void queryOnNotExistTopLevelFieldShouldReturnNothing()
       throws InterruptedException, LuceneQueryException {
     Region region = createRegionAndIndexOnInvalidFields();
